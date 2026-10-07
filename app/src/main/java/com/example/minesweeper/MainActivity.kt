@@ -104,19 +104,3 @@ fun Grid(modifier: Modifier)
     }
 }
 
-//        for (i in 1..2) {
-//            drawLine(
-//                color = Color.Black,
-//                strokeWidth = 5f,
-//                start = Offset(thirdSize * i, 0f),
-//                end = Offset(thirdSize * i, gridSize)
-//            )
-//
-//            drawLine(
-//                color = Color.Black,
-//                strokeWidth = 5f,
-//                start = Offset(0f, thirdSize * i),
-//                end = Offset(gridSize, thirdSize * i)
-//            )
-//        }
-
