@@ -1,6 +1,7 @@
 package com.example.minesweeper
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,8 +44,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//
+//.pointerInput(key1 = Unit) {
+//    detectTapGestures {
+//            offSet ->
+//        //Log.d("TAG_TAP",
+//        //    "${offSet.x} - ${offSet.y}")
+//
+//        val row = (offSet.y / (size.height / 3)).toInt()
+//        val col = (offSet.x / (size.width / 3)).toInt()
+//        onCellClicked(BoardCell(row,col))
+//    }
+//}
 @Composable
-fun Grid(modifier: Modifier) {
+fun Grid(modifier: Modifier)
+        {
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -53,6 +68,18 @@ fun Grid(modifier: Modifier) {
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .aspectRatio(1.0f)
+                .pointerInput(key1 = Unit) {
+                    detectTapGestures {
+                        offSet ->
+                        Log.d("TAG_TAP",
+                            "${offSet.x} - ${offSet.y}")
+
+                    val row = (offSet.y / (size.height / 5)).toInt()
+                    val col = (offSet.x / (size.width / 5)).toInt()
+                        Log.d("TAG_TAP",
+                            "${row},${col} ")
+                }
+            }
         ){
             val gridSize = size.minDimension
             val fifthSize = gridSize/5
@@ -72,9 +99,6 @@ fun Grid(modifier: Modifier) {
                     end = Offset(x = gridSize, y = fifthSize * i)
                 )
             }
-
-
-
 
         }
     }
