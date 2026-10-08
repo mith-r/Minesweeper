@@ -61,7 +61,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
 
         MinesweeperBoard(
             board = viewModel.board,
-            onCellTap = {row, col -> viewModel.toggleFlag(row, col)}
+            onCellTap = {row, col -> viewModel.toggleFlag(row, col)},
+            onCellLongPress = {row, col -> viewModel.reveal(row,col) }
         )
     }
 
@@ -70,7 +71,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
 @Composable
 fun MinesweeperBoard(
     board: Array<Array<Field>>,
-    onCellTap: (Int, Int) -> Unit
+    onCellTap: (Int, Int) -> Unit,
+    onCellLongPress: (Int, Int) -> Unit
 ){
 
     Canvas(
@@ -78,18 +80,23 @@ fun MinesweeperBoard(
             .fillMaxWidth(0.8f)
             .aspectRatio(1.0f)
             .pointerInput(key1 = Unit) {
-                detectTapGestures {
-                    offSet ->
-                    Log.d("TAG_TAP",
-                        "${offSet.x} - ${offSet.y}")
+                fun cellAt(offSet: Offset): Pair<Int, Int> {
+                    val row = (offSet.y / (size.height / 5)).toInt()
+                    val col = (offSet.x / (size.width / 5)).toInt()
+                    return Pair(row, col)
+                }
 
-                val row = (offSet.y / (size.height / 5)).toInt()
-                val col = (offSet.x / (size.width / 5)).toInt()
-                onCellTap(row, col)
-                    Log.d("TAG_TAP", "${row},${col} ")
-
+                detectTapGestures(
+                    onTap = { offSet ->
+                        val (row, col) = cellAt(offSet)
+                        onCellTap(row, col)
+                    },
+                    onLongPress = { offSet ->
+                        val (row, col) = cellAt(offSet)
+                        onCellLongPress(row, col)
+                    }
+                )
             }
-        }
     ) {
         // Draw the Grid
         val gridSize = size.minDimension
