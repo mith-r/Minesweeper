@@ -13,8 +13,15 @@ class MinesweeperViewModel: ViewModel() {
     var board by mutableStateOf(
         Array(5){
             Array(5){
-                Field(isMine = false, isFlagged = false, isRevealed = false, minesAround = 0)
+                Field(isMine = false, isFlagged = true, isRevealed = false, minesAround = 0)
             }
         }
     )
+
+    fun toggleFlag(row: Int,col: Int){
+        val newBoard = board.map { it.copyOf()}.toTypedArray()
+        val cell = newBoard[row][col]
+        newBoard[row][col] = cell.copy(isFlagged = !cell.isFlagged)
+        board = newBoard
+    }
 }

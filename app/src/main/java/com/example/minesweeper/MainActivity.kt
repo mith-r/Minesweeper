@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -59,7 +60,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
         Text(text = "MineSweeper")
 
         MinesweeperBoard(
-            board = viewModel.board
+            board = viewModel.board,
+            onCellTap = {row, col -> viewModel.toggleFlag(row, col)}
         )
     }
 
@@ -67,7 +69,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
 
 @Composable
 fun MinesweeperBoard(
-    board: Array<Array<Field>>
+    board: Array<Array<Field>>,
+    onCellTap: (Int, Int) -> Unit
 ){
 
     Canvas(
@@ -82,8 +85,9 @@ fun MinesweeperBoard(
 
                 val row = (offSet.y / (size.height / 5)).toInt()
                 val col = (offSet.x / (size.width / 5)).toInt()
-                    Log.d("TAG_TAP",
-                        "${row},${col} ")
+                onCellTap(row, col)
+                    Log.d("TAG_TAP", "${row},${col} ")
+
             }
         }
     ) {
@@ -111,6 +115,51 @@ fun MinesweeperBoard(
         for (row in 0..4) {
             for (col in 0..4) {
                 val box = board[row][col]
+                val centerX = col * fifthSize + fifthSize / 2
+                val centerY = row * fifthSize + fifthSize / 2
+
+                if (!box.isRevealed){
+
+                    // Green Background
+                    drawRect(
+                        color = Color.Green,
+                        topLeft = Offset(col * fifthSize, row * fifthSize),
+                        size = Size(fifthSize, fifthSize)
+                    )
+
+                    //Placing the Flag
+
+                    if (box.isFlagged){
+
+                        val poleX = centerX - fifthSize * 0.15f
+                        val poleTop = centerY - fifthSize * 0.3f
+                        val poleBottom = centerY + fifthSize * 0.3f
+
+                        //Flag Pole
+                        drawLine(
+                            color = Color.Black,
+                            strokeWidth = fifthSize * 0.05f,
+                            start = Offset(poleX, poleBottom),
+                            end = Offset(poleX, poleTop)
+                        )
+
+                        // Flag Rectangle, attached to the right of the pole top
+                        drawRect(
+                            color = Color.Red,
+                            topLeft = Offset(poleX, poleTop),
+                            size = Size(fifthSize * 0.35f, fifthSize * 0.25f)
+                        )
+
+                    }
+
+                } else{
+                    drawRect(
+                        color = Color(0xFF8B6F47),
+                        topLeft = Offset(col * fifthSize, row * fifthSize),
+                        size = Size(fifthSize, fifthSize)
+                    )
+
+                }
 
 
             }
