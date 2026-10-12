@@ -1,4 +1,4 @@
-package com.example.minesweeper
+package com.example.minesweeper.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
 
-data class BoardCell(val row: Int, val col: Int)
 data class Field (var isMine: Boolean, var isFlagged: Boolean, var isRevealed: Boolean, var minesAround: Int)
 
 
@@ -58,7 +57,8 @@ class MinesweeperViewModel: ViewModel() {
         if (firstReveal){
             setupMines(row,col)
             firstReveal = false
-            timerJob = viewModelScope.launch{while(true){delay(1.seconds);seconds++} }
+            timerJob = viewModelScope.launch {while(true){
+                delay(1.seconds);seconds++} }
         }
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
@@ -121,7 +121,7 @@ class MinesweeperViewModel: ViewModel() {
                 val new_col = col + cc
 
                 if ((min(new_row, new_col) >= 0)
-                    && (max(new_row,new_col) < 5)
+                    && (max(new_row, new_col) < 5)
                     && ((new_row != row) || (new_col != col))){
 
                     val newCell = board[new_row][new_col]

@@ -17,7 +17,7 @@ The board has 3 mines.
 | Requirement | How it's implemented |
 |---|---|
 | 5×5 game area with 3 mines | 5×5 `Array<Array<Field>>` in the ViewModel, 3 mines placed at random |
-| Choosing between "try a field" and "place a flag" | Gestures instead of a checkbox: tap tries a field, long-press places a flag |
+| Choosing between "try a field" and "place a flag" | tap tries a field, long-press places a flag |
 | Hitting a mine ends the game | Revealing a mine shows the game-over dialog |
 | Safe field shows the nearby mine count | Each square stores its neighbouring mine count, drawn as a number with `drawText` |
 | Flagging a non-mine ends the game | Long-pressing a safe square ends the game |
@@ -29,7 +29,7 @@ The board has 3 mines.
 
 - **Safe first tap.** Mines are placed only after your first tap, so you cannot lose on the first tap. 
 - **Flood fill.** Revealing a square with no neighbouring mines automatically opens the area around it.
-- **Timer.** Starts on the first tap and stops when the game ends. I
+- **Timer.** Starts on the first tap and stops when the game ends.
 - **Flags remaining counter.** Shown in the status bar and calculated directly from the board.
 - **Result dialog.**
   - 🏆 "You Win!" with your completion time.
@@ -51,6 +51,6 @@ The board has 3 mines.
 
 ## Code layout
 
-- `MinesweeperViewModel.kt`: game state and rules: mine placement, mine counts, revealing, flags, timer, win and lose.
-- `MainActivity.kt`: the UI: status bar, the `Canvas` board with tap and long-press handling, and the result dialog.
+- `viewmodel/MinesweeperViewModel.kt`: game state and rules: mine placement, mine counts, revealing, flags, timer, win and lose.
+- `MainActivity.kt` (root package): the UI: status bar, the `Canvas` board with tap and long-press handling, and the result dialog.
 - `res/values/strings.xml`: every piece of user-visible text, including the emoji, so the app can be translated without code changes. Text containing numbers (flags left, time) uses `%1$d` placeholders.
