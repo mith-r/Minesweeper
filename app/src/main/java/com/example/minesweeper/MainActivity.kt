@@ -91,6 +91,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
             onCellTap = {row, col -> viewModel.reveal(row,col) }
         )
 
+        Spacer(Modifier.height(12.dp))
+        Text("Tap to reveal · Long-press to flag", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
         Spacer(Modifier.height(24.dp))
         Button(onClick = { viewModel.resetGame() }) { Text("New game") }
     }

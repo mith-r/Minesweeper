@@ -37,7 +37,7 @@ class MinesweeperViewModel: ViewModel() {
     }
 
     fun toggleFlag(row: Int, col: Int) {
-        if (firstReveal || gameOver){
+        if (firstReveal || gameOver || board[row][col].isRevealed){
             return
         }
         val newBoard = board.map { it.copyOf() }.toTypedArray()
@@ -137,7 +137,7 @@ class MinesweeperViewModel: ViewModel() {
     }
 
     private fun setupBoard() {
-        timerJob?.cancel();seconds
+        timerJob?.cancel(); seconds = 0
         gameOver = false
         showGameOverDialog = false
         firstReveal = true
