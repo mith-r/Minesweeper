@@ -26,6 +26,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -79,7 +82,7 @@ fun MinesweeperGameScreen(modifier: Modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("🚩 ${3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }}", color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Text("⏱ ${viewModel.seconds}", color = Color.White, style = MaterialTheme.typography.titleLarge)
+            Text("⏰ ${viewModel.seconds}", color = Color.White, style = MaterialTheme.typography.titleLarge)
         }
 
         MinesweeperBoard(
@@ -92,10 +95,11 @@ fun MinesweeperGameScreen(modifier: Modifier,
         Button(onClick = { viewModel.resetGame() }) { Text("New game") }
     }
     if (viewModel.showGameOverDialog){
+        val won = viewModel.board.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22
         AlertDialog(
             onDismissRequest = {},
             dismissButton = {
-                Button(
+                TextButton(
                     onClick = {
                         viewModel.dismissScreen()
                     }
@@ -103,7 +107,13 @@ fun MinesweeperGameScreen(modifier: Modifier,
                     Text("Close")
                 }
             },
-            title = {Text(if (viewModel.board.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22) "You Win!" else "Game Over!")},
+            icon = {Text(if (won) "🏆" else "💣", fontSize = 48.sp)},
+            title = {Text(if (won) "You Win!" else "Game Over!")},
+            text = {Text(when {
+                won -> "You cleared the board in ${viewModel.seconds} seconds."
+                viewModel.board.any { r -> r.any { it.isFlagged && !it.isMine } } -> "You flagged a safe square."
+                else -> "You hit a mine."
+            }, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)},
             confirmButton = {
                 Button(
                     onClick = {
@@ -184,26 +194,11 @@ fun MinesweeperBoard(
                     //Placing the Flag
 
                     if (box.isFlagged){
-
-                        val poleX = centerX - fifthSize * 0.15f
-                        val poleTop = centerY - fifthSize * 0.3f
-                        val poleBottom = centerY + fifthSize * 0.3f
-
-                        //Flag Pole
-                        drawLine(
-                            color = Color.Black,
-                            strokeWidth = fifthSize * 0.05f,
-                            start = Offset(poleX, poleBottom),
-                            end = Offset(poleX, poleTop)
+                        val flag = textMeasurer.measure("🚩", TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
+                        drawText(
+                            textLayoutResult = flag,
+                            topLeft = Offset(centerX - flag.size.width / 2, centerY - flag.size.height / 2)
                         )
-
-                        // Flag Rectangle, attached to the right of the pole top
-                        drawRect(
-                            color = Color.Red,
-                            topLeft = Offset(poleX, poleTop),
-                            size = Size(fifthSize * 0.35f, fifthSize * 0.25f)
-                        )
-
                     }
 
                 } else{
@@ -226,21 +221,14 @@ fun MinesweeperBoard(
                     }
 
                     if (box.isMine){
-                        drawCircle(
-                            color = Color.Black,
-                            radius = fifthSize/2 * 0.9f,
-                            center = Offset(centerX, centerY)
+                        val bomb = textMeasurer.measure("💣", TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
+                        drawText(
+                            textLayoutResult = bomb,
+                            topLeft = Offset(centerX - bomb.size.width / 2, centerY - bomb.size.height / 2)
                         )
                     }
 
-
-
-
-
-
                 }
-
-
             }
         }
 
