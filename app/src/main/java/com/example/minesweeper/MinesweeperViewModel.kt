@@ -66,6 +66,7 @@ class MinesweeperViewModel: ViewModel() {
             gameOver(newBoard)
         }
         revealNeighbors(newBoard, row, col)
+        if (newBoard.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22) gameOver(newBoard)
         board = newBoard
     }
 

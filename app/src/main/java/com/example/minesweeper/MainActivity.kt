@@ -95,7 +95,7 @@ fun MinesweeperGameScreen(modifier: Modifier,
                     Text("Close")
                 }
             },
-            title = {Text("Game Over!")},
+            title = {Text(if (viewModel.board.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22) "You Win!" else "Game Over!")},
             confirmButton = {
                 Button(
                     onClick = {
