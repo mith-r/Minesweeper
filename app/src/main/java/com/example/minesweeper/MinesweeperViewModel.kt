@@ -10,6 +10,7 @@ import kotlin.math.min
 data class BoardCell(val row: Int, val col: Int)
 data class Field (var isMine: Boolean, var isFlagged: Boolean, var isRevealed: Boolean, var minesAround: Int)
 
+
 class MinesweeperViewModel: ViewModel() {
 
     var board by mutableStateOf(
@@ -20,6 +21,8 @@ class MinesweeperViewModel: ViewModel() {
         }
     )
 
+    var gameOver by mutableStateOf(false)
+
     init{
         setupBoard()
     }
@@ -27,6 +30,9 @@ class MinesweeperViewModel: ViewModel() {
     fun toggleFlag(row: Int, col: Int) {
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
+        if (!cell.isMine){
+            gameOver = true
+        }
         newBoard[row][col] = cell.copy(isFlagged = !cell.isFlagged)
         board = newBoard
     }
@@ -34,13 +40,39 @@ class MinesweeperViewModel: ViewModel() {
     fun reveal(row: Int, col: Int) {
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
-        if (!cell.isRevealed and !cell.isFlagged) {
-            newBoard[row][col] = cell.copy(isRevealed = true)
-            board = newBoard
+
+        if (cell.isMine){
+            gameOver = true
+        }
+        revealNeighbors(newBoard, row, col)
+        board = newBoard
+    }
+
+    private fun revealNeighbors(newBoard: Array<Array<Field>>, row:Int, col: Int) {
+        if (row !in 0..4 || col !in 0..4) {
+            return
+        }
+
+        val cell = newBoard[row][col]
+
+        if (cell.isRevealed) {
+            return
+        }
+
+        newBoard[row][col] = cell.copy(isRevealed = true)
+
+        if (cell.isMine || cell.minesAround != 0) {
+            return
+        }
+
+        for (rc in -1..1) {
+            for (cc in -1..1) {
+                revealNeighbors(newBoard, row + rc, col + cc)
+            }
         }
     }
 
-    fun calculateMines(row:Int, col:Int){
+    private fun calculateMines(row:Int, col:Int){
         val newBoard = board.map {it.copyOf() }. toTypedArray()
         val cell = newBoard[row][col]
         var mineCount = 0
@@ -52,8 +84,8 @@ class MinesweeperViewModel: ViewModel() {
                 val new_col = col + cc
 
                 if ((min(new_row, new_col) >= 0)
-                    and (max(new_row,new_col) < 5)
-                    and ((new_row != row) or (new_col != col))){
+                    && (max(new_row,new_col) < 5)
+                    && ((new_row != row) || (new_col != col))){
 
                     val newCell = board[new_row][new_col]
                     if (newCell.isMine){
@@ -68,7 +100,8 @@ class MinesweeperViewModel: ViewModel() {
         board = newBoard
     }
 
-    fun setupBoard() {
+    private fun setupBoard() {
+        gameOver = false
         board = Array(5){Array(5){
                 Field(false,false,false,0)
             }

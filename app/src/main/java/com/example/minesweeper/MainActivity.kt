@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MinesweeperGameScreen(modifier: Modifier,
     viewModel: MinesweeperViewModel = viewModel()
@@ -74,8 +77,24 @@ fun MinesweeperGameScreen(modifier: Modifier,
 
         MinesweeperBoard(
             board = viewModel.board,
-            onCellTap = {row, col -> viewModel.toggleFlag(row, col)},
-            onCellLongPress = {row, col -> viewModel.reveal(row,col) }
+            onCellLongPress = {row, col -> viewModel.toggleFlag(row, col)},
+            onCellTap = {row, col -> viewModel.reveal(row,col) }
+        )
+    }
+    if (viewModel.gameOver){
+        AlertDialog(
+            onDismissRequest = {},
+            title = {Text("Game Over!")},
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetGame()
+                    }
+                ) {
+                    Text("New Game")
+                }
+            }
+
         )
     }
 
@@ -187,9 +206,8 @@ fun MinesweeperBoard(
                         size = Size(fifthSize, fifthSize)
                     )
 
-                    if (box.minesAround == 0){
-                        onCellLongPress(row,col)
-                    }else {
+                    if (box.minesAround != 0)
+                    {
 
                         drawText(
                             textLayoutResult = textLayoutResult,
@@ -203,7 +221,6 @@ fun MinesweeperBoard(
 
 
 
-                    //draw Text
 
 
                 }
