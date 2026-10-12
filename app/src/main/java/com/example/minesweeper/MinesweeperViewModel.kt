@@ -22,6 +22,7 @@ class MinesweeperViewModel: ViewModel() {
     )
 
     var gameOver by mutableStateOf(false)
+    var firstReveal = true
 
     init{
         setupBoard()
@@ -38,6 +39,11 @@ class MinesweeperViewModel: ViewModel() {
     }
 
     fun reveal(row: Int, col: Int) {
+
+        if (firstReveal){
+            setupMines(row,col)
+            firstReveal = false
+        }
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
 
@@ -102,13 +108,19 @@ class MinesweeperViewModel: ViewModel() {
 
     private fun setupBoard() {
         gameOver = false
+        firstReveal = true
         board = Array(5){Array(5){
                 Field(false,false,false,0)
             }
         }
+
+
+    }
+
+    private fun setupMines(row: Int, col: Int){
         //Randomly placing Mines
-        (0 until 25).shuffled().take(3).forEach{
-            n -> board[n/5][n%5].isMine = true
+        (0 until 25).filter {n -> n != row * 5 + col}.shuffled().take(3).forEach{
+                n -> board[n/5][n%5].isMine = true
         }
 
         for (row in 0..4){
@@ -116,9 +128,7 @@ class MinesweeperViewModel: ViewModel() {
                 calculateMines(row,col)
             }
         }
-
     }
-
 
 
     fun resetGame(){
