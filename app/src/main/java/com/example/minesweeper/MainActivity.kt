@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -27,6 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -57,7 +62,15 @@ fun MinesweeperGameScreen(modifier: Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text(text = "MineSweeper")
+        Text(text = "MineSweeper Game")
+
+        Button(
+            onClick = {
+                viewModel.resetGame()
+            }
+        ) {
+            Text("New Game")
+        }
 
         MinesweeperBoard(
             board = viewModel.board,
@@ -74,7 +87,7 @@ fun MinesweeperBoard(
     onCellTap: (Int, Int) -> Unit,
     onCellLongPress: (Int, Int) -> Unit
 ){
-
+    val textMeasurer = rememberTextMeasurer()
     Canvas(
         modifier = Modifier
             .fillMaxWidth(0.8f)
@@ -119,11 +132,19 @@ fun MinesweeperBoard(
         }
 
         //Draw whats inside
+
         for (row in 0..4) {
             for (col in 0..4) {
                 val box = board[row][col]
                 val centerX = col * fifthSize + fifthSize / 2
                 val centerY = row * fifthSize + fifthSize / 2
+
+                val textLayoutResult: TextLayoutResult =
+                    textMeasurer.measure(
+                        text = box.minesAround.toString(),
+                        style = TextStyle(fontSize = (fifthSize * 0.9f).toSp() , fontWeight = FontWeight.Bold)
+                    )
+                val textSize = textLayoutResult.size
 
                 if (!box.isRevealed){
 
@@ -165,6 +186,20 @@ fun MinesweeperBoard(
                         topLeft = Offset(col * fifthSize, row * fifthSize),
                         size = Size(fifthSize, fifthSize)
                     )
+
+                    drawText(
+                        textLayoutResult = textLayoutResult,
+                        topLeft = Offset(
+                            x  = centerX - textSize.width/2,
+                            y = centerY - textSize.width
+                        ),
+                    )
+
+
+
+
+                    //draw Text
+
 
                 }
 
