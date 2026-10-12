@@ -46,6 +46,7 @@ class MinesweeperViewModel: ViewModel() {
             gameOver(newBoard)
         }
         newBoard[row][col] = cell.copy(isFlagged = !cell.isFlagged)
+        if (newBoard.sumOf { r -> r.count { it.isFlagged && it.isMine } } == 3) gameOver(newBoard)
         board = newBoard
     }
 

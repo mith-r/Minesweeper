@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Minesweeper</string>
+    <string name="flags_left">🚩 %1$d</string>
+    <string name="time">⏰ %1$d</string>
+    <string name="hint">Tap to reveal · Long-press to flag</string>
+    <string name="new_game">New Game</string>
+    <string name="close">Close</string>
+    <string name="trophy">🏆</string>
+    <string name="flag">🚩</string>
+    <string name="bomb">💣</string>
+    <string name="you_win">You Win!</string>
+    <string name="game_over">Game Over!</string>
+    <string name="win_message">You cleared the board in %1$d seconds.</string>
+    <string name="wrong_flag_message">You flagged a safe square.</string>
+    <string name="hit_mine_message">You hit a mine.</string>
 </resources>

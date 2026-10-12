@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
@@ -74,15 +75,15 @@ fun MinesweeperGameScreen(modifier: Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text("Minesweeper", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(24.dp))
         Row(
             Modifier.fillMaxWidth(0.8f).background(Color(0xFF4A752C)).padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("🚩 ${3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }}", color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Text("⏰ ${viewModel.seconds}", color = Color.White, style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.flags_left, 3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }), color = Color.White, style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.time, viewModel.seconds), color = Color.White, style = MaterialTheme.typography.titleLarge)
         }
 
         MinesweeperBoard(
@@ -92,12 +93,13 @@ fun MinesweeperGameScreen(modifier: Modifier,
         )
 
         Spacer(Modifier.height(12.dp))
-        Text("Tap to reveal · Long-press to flag", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+        Text(stringResource(R.string.hint), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
         Spacer(Modifier.height(24.dp))
-        Button(onClick = { viewModel.resetGame() }) { Text("New game") }
+        Button(onClick = { viewModel.resetGame() }) { Text(stringResource(R.string.new_game)) }
     }
     if (viewModel.showGameOverDialog){
-        val won = viewModel.board.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22
+        val won = viewModel.board.sumOf { r -> r.count { it.isRevealed && !it.isMine } } == 22 ||
+                viewModel.board.sumOf { r -> r.count { it.isFlagged && it.isMine } } == 3
         AlertDialog(
             onDismissRequest = {},
             dismissButton = {
@@ -106,15 +108,15 @@ fun MinesweeperGameScreen(modifier: Modifier,
                         viewModel.dismissScreen()
                     }
                 ) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             },
-            icon = {Text(if (won) "🏆" else "💣", fontSize = 48.sp)},
-            title = {Text(if (won) "You Win!" else "Game Over!")},
+            icon = {Text(stringResource(if (won) R.string.trophy else R.string.bomb), fontSize = 48.sp)},
+            title = {Text(stringResource(if (won) R.string.you_win else R.string.game_over))},
             text = {Text(when {
-                won -> "You cleared the board in ${viewModel.seconds} seconds."
-                viewModel.board.any { r -> r.any { it.isFlagged && !it.isMine } } -> "You flagged a safe square."
-                else -> "You hit a mine."
+                won -> stringResource(R.string.win_message, viewModel.seconds)
+                viewModel.board.any { r -> r.any { it.isFlagged && !it.isMine } } -> stringResource(R.string.wrong_flag_message)
+                else -> stringResource(R.string.hit_mine_message)
             }, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)},
             confirmButton = {
                 Button(
@@ -122,7 +124,7 @@ fun MinesweeperGameScreen(modifier: Modifier,
                         viewModel.resetGame()
                     }
                 ) {
-                    Text("New Game")
+                    Text(stringResource(R.string.new_game))
                 }
             }
 
@@ -138,6 +140,8 @@ fun MinesweeperBoard(
     onCellLongPress: (Int, Int) -> Unit
 ){
     val textMeasurer = rememberTextMeasurer()
+    val flagEmoji = stringResource(R.string.flag)
+    val bombEmoji = stringResource(R.string.bomb)
     Canvas(
         modifier = Modifier
             .fillMaxWidth(0.8f)
@@ -196,7 +200,7 @@ fun MinesweeperBoard(
                     //Placing the Flag
 
                     if (box.isFlagged){
-                        val flag = textMeasurer.measure("🚩", TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
+                        val flag = textMeasurer.measure(flagEmoji, TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
                         drawText(
                             textLayoutResult = flag,
                             topLeft = Offset(centerX - flag.size.width / 2, centerY - flag.size.height / 2)
@@ -223,7 +227,7 @@ fun MinesweeperBoard(
                     }
 
                     if (box.isMine){
-                        val bomb = textMeasurer.measure("💣", TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
+                        val bomb = textMeasurer.measure(bombEmoji, TextStyle(fontSize = (fifthSize * 0.6f).toSp()))
                         drawText(
                             textLayoutResult = bomb,
                             topLeft = Offset(centerX - bomb.size.width / 2, centerY - bomb.size.height / 2)
