@@ -22,6 +22,8 @@ class MinesweeperViewModel: ViewModel() {
     )
 
     var gameOver by mutableStateOf(false)
+    var showGameOverDialog by mutableStateOf(false)
+
     var firstReveal = true
 
     init{
@@ -29,16 +31,22 @@ class MinesweeperViewModel: ViewModel() {
     }
 
     fun toggleFlag(row: Int, col: Int) {
+        if (firstReveal || gameOver){
+            return
+        }
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
         if (!cell.isMine){
-            gameOver = true
+            gameOver(newBoard)
         }
         newBoard[row][col] = cell.copy(isFlagged = !cell.isFlagged)
         board = newBoard
     }
 
     fun reveal(row: Int, col: Int) {
+        if (gameOver){
+            return
+        }
 
         if (firstReveal){
             setupMines(row,col)
@@ -48,10 +56,23 @@ class MinesweeperViewModel: ViewModel() {
         val cell = newBoard[row][col]
 
         if (cell.isMine){
-            gameOver = true
+            gameOver(newBoard)
         }
         revealNeighbors(newBoard, row, col)
         board = newBoard
+    }
+
+    fun gameOver(newBoard: Array<Array<Field>>){
+        gameOver = true
+        showGameOverDialog = true
+
+        for (nr in 0..4){
+            for (nc in 0..4){
+                if (newBoard[nr][nc].isMine){
+                    newBoard[nr][nc] = newBoard[nr][nc].copy(isRevealed = true)
+                }
+            }
+        }
     }
 
     private fun revealNeighbors(newBoard: Array<Array<Field>>, row:Int, col: Int) {
@@ -108,6 +129,7 @@ class MinesweeperViewModel: ViewModel() {
 
     private fun setupBoard() {
         gameOver = false
+        showGameOverDialog = false
         firstReveal = true
         board = Array(5){Array(5){
                 Field(false,false,false,0)
@@ -128,6 +150,10 @@ class MinesweeperViewModel: ViewModel() {
                 calculateMines(row,col)
             }
         }
+    }
+
+    fun dismissScreen(){
+        showGameOverDialog = false
     }
 
 

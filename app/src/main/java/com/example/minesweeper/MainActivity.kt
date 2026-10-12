@@ -81,9 +81,18 @@ fun MinesweeperGameScreen(modifier: Modifier,
             onCellTap = {row, col -> viewModel.reveal(row,col) }
         )
     }
-    if (viewModel.gameOver){
+    if (viewModel.showGameOverDialog){
         AlertDialog(
             onDismissRequest = {},
+            dismissButton = {
+                Button(
+                    onClick = {
+                        viewModel.dismissScreen()
+                    }
+                ) {
+                    Text("Close")
+                }
+            },
             title = {Text("Game Over!")},
             confirmButton = {
                 Button(
@@ -215,6 +224,14 @@ fun MinesweeperBoard(
                                 x  = centerX - textSize.width/2,
                                 y = centerY - textSize.width
                             ),
+                        )
+                    }
+
+                    if (box.isMine){
+                        drawCircle(
+                            color = Color.Black,
+                            radius = fifthSize/2 * 0.9f,
+                            center = Offset(centerX, centerY)
                         )
                     }
 
