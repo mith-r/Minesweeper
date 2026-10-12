@@ -145,22 +145,6 @@ fun MinesweeperBoard(
         val gridSize = size.minDimension
         val fifthSize = gridSize / 5
 
-        for (i in 0..5) {
-            drawLine(
-                color = Color.Black,
-                strokeWidth = 3f,
-                start = Offset(fifthSize * i, y = 0f),
-                end = Offset(fifthSize * i, gridSize)
-            )
-
-            drawLine(
-                color = Color.Black,
-                strokeWidth = 3f,
-                start = Offset(x = 0f, y = fifthSize * i),
-                end = Offset(x = gridSize, y = fifthSize * i)
-            )
-        }
-
         //Draw whats inside
 
         for (row in 0..4) {
@@ -168,11 +152,15 @@ fun MinesweeperBoard(
                 val box = board[row][col]
                 val centerX = col * fifthSize + fifthSize / 2
                 val centerY = row * fifthSize + fifthSize / 2
+                val light = (row + col) % 2 == 0
+                val grass = if (light) Color(0xFFAAD751) else Color(0xFFA2D149)
+                val dirt = if (light) Color(0xFFE5C29F) else Color(0xFFD7B899)
 
                 val textLayoutResult: TextLayoutResult =
                     textMeasurer.measure(
                         text = box.minesAround.toString(),
-                        style = TextStyle(fontSize = (fifthSize * 0.9f).toSp() , fontWeight = FontWeight.Bold)
+                        style = TextStyle(fontSize = (fifthSize * 0.6f).toSp() , fontWeight = FontWeight.Bold,
+                            color = listOf(Color(0xFF1976D2), Color(0xFF388E3C), Color(0xFFD32F2F)).getOrElse(box.minesAround - 1) { Color.Black })
                     )
                 val textSize = textLayoutResult.size
 
@@ -180,7 +168,7 @@ fun MinesweeperBoard(
 
                     // Green Background
                     drawRect(
-                        color = Color.Green,
+                        color = grass,
                         topLeft = Offset(col * fifthSize, row * fifthSize),
                         size = Size(fifthSize, fifthSize)
                     )
@@ -212,7 +200,7 @@ fun MinesweeperBoard(
 
                 } else{
                     drawRect(
-                        color = Color(0xFF8B6F47),
+                        color = dirt,
                         topLeft = Offset(col * fifthSize, row * fifthSize),
                         size = Size(fifthSize, fifthSize)
                     )
@@ -224,7 +212,7 @@ fun MinesweeperBoard(
                             textLayoutResult = textLayoutResult,
                             topLeft = Offset(
                                 x  = centerX - textSize.width/2,
-                                y = centerY - textSize.width
+                                y = centerY - textSize.height / 2
                             ),
                         )
                     }
