@@ -66,6 +66,8 @@ fun MinesweeperGameScreen(modifier: Modifier,
         verticalArrangement = Arrangement.Center
     ){
         Text(text = "MineSweeper Game")
+        Text(text = "Flags Remaining: ${3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }}")
+        Text(text = "Time: ${viewModel.seconds}")
 
         Button(
             onClick = {

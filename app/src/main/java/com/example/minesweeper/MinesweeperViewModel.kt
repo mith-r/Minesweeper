@@ -4,8 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.Duration.Companion.seconds
 
 data class BoardCell(val row: Int, val col: Int)
 data class Field (var isMine: Boolean, var isFlagged: Boolean, var isRevealed: Boolean, var minesAround: Int)
@@ -25,6 +30,7 @@ class MinesweeperViewModel: ViewModel() {
     var showGameOverDialog by mutableStateOf(false)
 
     var firstReveal = true
+    var seconds by mutableStateOf(0)
 
     init{
         setupBoard()
@@ -51,6 +57,7 @@ class MinesweeperViewModel: ViewModel() {
         if (firstReveal){
             setupMines(row,col)
             firstReveal = false
+            timerJob = viewModelScope.launch{while(true){delay(1.seconds);seconds++} }
         }
         val newBoard = board.map { it.copyOf() }.toTypedArray()
         val cell = newBoard[row][col]
@@ -65,6 +72,7 @@ class MinesweeperViewModel: ViewModel() {
     fun gameOver(newBoard: Array<Array<Field>>){
         gameOver = true
         showGameOverDialog = true
+        timerJob?.cancel()
 
         for (nr in 0..4){
             for (nc in 0..4){
@@ -128,6 +136,7 @@ class MinesweeperViewModel: ViewModel() {
     }
 
     private fun setupBoard() {
+        timerJob?.cancel();seconds
         gameOver = false
         showGameOverDialog = false
         firstReveal = true
@@ -151,6 +160,8 @@ class MinesweeperViewModel: ViewModel() {
             }
         }
     }
+
+    private var timerJob: Job? = null
 
     fun dismissScreen(){
         showGameOverDialog = false
