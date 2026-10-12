@@ -187,13 +187,18 @@ fun MinesweeperBoard(
                         size = Size(fifthSize, fifthSize)
                     )
 
-                    drawText(
-                        textLayoutResult = textLayoutResult,
-                        topLeft = Offset(
-                            x  = centerX - textSize.width/2,
-                            y = centerY - textSize.width
-                        ),
-                    )
+                    if (box.minesAround == 0){
+                        onCellLongPress(row,col)
+                    }else {
+
+                        drawText(
+                            textLayoutResult = textLayoutResult,
+                            topLeft = Offset(
+                                x  = centerX - textSize.width/2,
+                                y = centerY - textSize.width
+                            ),
+                        )
+                    }
 
 
 
