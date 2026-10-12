@@ -20,6 +20,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,16 +71,15 @@ fun MinesweeperGameScreen(modifier: Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Text(text = "MineSweeper Game")
-        Text(text = "Flags Remaining: ${3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }}")
-        Text(text = "Time: ${viewModel.seconds}")
-
-        Button(
-            onClick = {
-                viewModel.resetGame()
-            }
+        Text("Minesweeper", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(24.dp))
+        Row(
+            Modifier.fillMaxWidth(0.8f).background(Color(0xFF4A752C)).padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("New Game")
+            Text("🚩 ${3 - viewModel.board.sumOf { r -> r.count { it.isFlagged } }}", color = Color.White, style = MaterialTheme.typography.titleLarge)
+            Text("⏱ ${viewModel.seconds}", color = Color.White, style = MaterialTheme.typography.titleLarge)
         }
 
         MinesweeperBoard(
@@ -82,6 +87,9 @@ fun MinesweeperGameScreen(modifier: Modifier,
             onCellLongPress = {row, col -> viewModel.toggleFlag(row, col)},
             onCellTap = {row, col -> viewModel.reveal(row,col) }
         )
+
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = { viewModel.resetGame() }) { Text("New game") }
     }
     if (viewModel.showGameOverDialog){
         AlertDialog(
